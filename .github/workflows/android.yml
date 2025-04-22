@@ -3,13 +3,10 @@ name: Build Android APK
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     
@@ -18,22 +15,18 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        cache: gradle
-    
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    
-    - name: Create local.properties
-      run: echo "sdk.dir=$ANDROID_HOME" > local.properties
-    
-    - name: Create assets directory
-      run: mkdir -p app/src/main/assets
-    
-    - name: Create dummy TensorFlow Lite model
-      run: touch app/src/main/assets/game_character_model.tflite
+        
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
       
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
       
-    # تبسيط سير العمل بإزالة خطوة رفع الملف التي تسبب المشكلة
-    # سنقوم بإعادة إضافتها لاحقاً بعد نجاح البناء الأساسي
+    - name: Build with Gradle
+      run: ./gradlew assembleDebug --stacktrace
+      
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/*.apk
