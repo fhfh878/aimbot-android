@@ -19,18 +19,16 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
-    # استبدال خطوة إعداد Android SDK بأوامر مباشرة
     - name: Setup Android SDK
-      run: |
-        echo "تثبيت أدوات Android SDK الأساسية"
-        echo y | sudo apt-get install -y --no-install-recommends lib32stdc++6 lib32z1
-        
-    - name: Build with Gradle
-      run: ./gradlew assembleDebug --stacktrace
+      uses: android-actions/setup-android@v2
       
-    # تعطيل خطوة رفع الملفات مؤقتًا حتى يتم إصلاح مشكلة البناء
-    # - name: Upload APK
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: app-debug
-    #     path: app/build/outputs/apk/debug/*.apk
+    - name: Build with Gradle
+      run: ./gradlew assembleDebug --info
+      
+    # تفعيل خطوة رفع الملفات بعد إصلاح مشكلة البناء
+    - name: Upload APK
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/*.apk
