@@ -19,16 +19,5 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
-      
     - name: Build with Gradle
-      run: ./gradlew assembleDebug --info
-      
-    # تعطيل خطوة رفع الملفات مؤقتًا حتى يتم إصلاح مشكلة البناء
-    # - name: Upload APK
-    #   if: success()
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: app-debug
-    #     path: app/build/outputs/apk/debug/*.apk
+      run: ./gradlew assembleDebug --stacktrace
